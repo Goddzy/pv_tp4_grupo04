@@ -9,7 +9,7 @@ const Producto = ({producto}) => {
               {producto.descuento > 0 && <p>Descuento: {producto.descuento}%</p>}
              <p>Stock: {producto.stock}</p>
              <button>Modificar</button>
-             <button>Eliminar</button>
+             {/* <button>Eliminar</button> */}
     </div>
   );
 };

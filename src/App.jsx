@@ -1,6 +1,6 @@
 import './styles/style.css';
 import Producto from './components/Producto';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 function App() {
   // Estados para los inputs
@@ -12,21 +12,19 @@ function App() {
   const [descuento, setDescuento] = useState('');
   const [stock, setStock] = useState('');
 
-
-  //mostrar con el useEffect el array productos cada vez que se modifica (y 1 vez cuando se monta la página)
-  useEffect(()=>{
+  // Mostrar en consola la lista de productos cada vez que se modifique
+  useEffect(() => {
     console.log(listaProductos);
-  }, [listaProductos])
+  }, [listaProductos]);
 
-  const agregarProducto = (e)=>{
+  const agregarProducto = (e) => {
     e.preventDefault();
-    if(nombre.trim() != '' && descripcion.trim() != '' && precioUnitario.trim() != '' && stock.trim()!=''){
-
-      //en caso de que el usuario no haya colocado un descuento
-      if(descuento.trim () == ''){
-        setDescuento('0')
+    if (
+      nombre.trim() !== '' &&   descripcion.trim() !== '' &&   precioUnitario.trim() !== '' &&   stock.trim() !== '' ) {
+      // En caso de que el usuario no haya colocado un descuento, se asigna "0"
+      if (descuento.trim() == '') {
+        setDescuento('0');
       }
-      
       let productoNuevo = {
         id: id,
         nombre: nombre,
@@ -34,21 +32,28 @@ function App() {
         precio: parseFloat(precioUnitario),
         descuento: parseFloat(descuento),
         stock: parseFloat(stock)
-      }
+      };
 
       setListaProductos([...listaProductos, productoNuevo]);
-      
-      //incrementar el ID
-      setId(id +1);
 
-      //vaciar los campos de los inputs
+      // Incrementar el ID
+      setId(id + 1);
+
+      // Vaciar los campos de los inputs
       setNombre('');
       setDescripcion('');
       setPrecioUnitario('');
       setDescuento('');
       setStock('');
     }
-  }
+  };
+
+  // Función para eliminar un producto
+  const eliminarProducto = useCallback((idProducto) => {
+    setListaProductos((prevLista) =>
+      prevLista.filter((prod) => prod.id !== idProducto)
+    );
+  }, []);
 
   return (
     <div className="contenedor">
@@ -62,7 +67,7 @@ function App() {
         />
         <input
           type="text"
-          placeholder='Nombre del producto'
+          placeholder="Nombre del producto"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
         />
@@ -94,11 +99,18 @@ function App() {
         <input type="text" placeholder="Buscar un producto" />
         <h2>Productos</h2>
         <div className="producto-lista">
-
-         {listaProductos.map((producto) => (
-            <Producto producto={producto} key={producto.id}></Producto>
+          {listaProductos.map((producto) => (
+            <div key={producto.id} className="producto-item">
+              <Producto producto={producto} />
+              <button
+                className="btnEliminar"
+                onClick={() => eliminarProducto(producto.id)}
+              >
+                Eliminar
+              </button>
+            </div>
           ))}
-       </div>
+        </div>
       </form>
     </div>
   );
