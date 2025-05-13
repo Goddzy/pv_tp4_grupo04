@@ -30,6 +30,7 @@ button {
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-left: 5px;
 }
 
 button:hover {
@@ -46,4 +47,9 @@ input {
 h2 {
   margin-top: 20px;
   color: #333;
+}
+
+.producto-card{
+  margin-top: 20px;
+  margin-bottom: 70px;
 }

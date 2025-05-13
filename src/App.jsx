@@ -1,4 +1,5 @@
 import './styles/style.css';
+import Producto from './components/Producto';
 import { useState, useEffect } from 'react';
 
 function App() {
@@ -92,6 +93,12 @@ function App() {
         <button onClick={agregarProducto}>Agregar un producto</button>
         <input type="text" placeholder="Buscar un producto" />
         <h2>Productos</h2>
+        <div className="producto-lista">
+
+         {listaProductos.map((producto) => (
+            <Producto producto={producto} key={producto.id}></Producto>
+          ))}
+       </div>
       </form>
     </div>
   );
