@@ -114,7 +114,8 @@ function App() {
 
         
          { (buscado.trim() === '')  ? listaProductos.map((producto) => (<Producto producto={producto} key={producto.id} />))
-          : <p>No hay resultados, intenta buscar algo</p>
+         
+          : productosFiltrados.map((producto) => (<Producto producto={producto} key={producto.id} />))
          }
        </div>
       </form>
