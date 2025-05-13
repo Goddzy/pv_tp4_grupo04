@@ -5,12 +5,16 @@ import { useState, useEffect } from 'react';
 function App() {
   // Estados para los inputs
   const [listaProductos, setListaProductos] = useState([]);
+
+  //state para la búsqueda y renderizado de elementos
+  const [productosFiltrados, setProductosFiltrados] = useState(listaProductos);
   const [id, setId] = useState(0);
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [precioUnitario, setPrecioUnitario] = useState('');
   const [descuento, setDescuento] = useState('');
   const [stock, setStock] = useState('');
+  const [buscado, setBuscado] = useState('');
 
 
   //mostrar con el useEffect el array productos cada vez que se modifica (y 1 vez cuando se monta la página)
@@ -48,6 +52,14 @@ function App() {
       setDescuento('');
       setStock('');
     }
+  }
+
+
+  const buscarElemento =(textoABuscar)=>{
+    const nuevoArray = listaProductos.filter((p)=> p.descripcion.toLowerCase().includes(textoABuscar.toLowerCase()) || p.id == parseInt(textoABuscar))
+
+    setProductosFiltrados(nuevoArray);
+
   }
 
   return (
@@ -91,13 +103,19 @@ function App() {
           onChange={(e) => setStock(e.target.value)}
         />
         <button onClick={agregarProducto}>Agregar un producto</button>
-        <input type="text" placeholder="Buscar un producto" />
+        <input type="text" placeholder="Buscar un producto" onChange={(e)=>{
+          setBuscado(e.target.value)
+
+          buscarElemento(e.target.value)
+
+          }} /> 
         <h2>Productos</h2>
         <div className="producto-lista">
 
-         {listaProductos.map((producto) => (
-            <Producto producto={producto} key={producto.id}></Producto>
-          ))}
+        
+         { (buscado.trim() === '')  ? listaProductos.map((producto) => (<Producto producto={producto} key={producto.id} />))
+          : <p>No hay resultados, intenta buscar algo</p>
+         }
        </div>
       </form>
     </div>
