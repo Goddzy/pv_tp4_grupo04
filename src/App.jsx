@@ -17,7 +17,10 @@ function App() {
   const [estado, setEstado] = useState(true);
   const [buscado, setBuscado] = useState('');
 
-   //mostrar con el useEffect el array productos cada vez que se modifica (y 1 vez cuando se monta la página)
+  // Nuevo estado para indicar si se deben mostrar solo los productos no disponibles
+  const [mostrarNoDisponibles, setMostrarNoDisponibles] = useState(false);
+
+  // Muestra por consola el array de productos cada vez que se modifica
   useEffect(() => {
     console.log(listaProductos);
   }, [listaProductos]);
@@ -30,7 +33,7 @@ function App() {
       precioUnitario.trim() !== '' &&
       stock.trim() !== ''
     ) {
-       //en caso de que el usuario no haya colocado un descuento
+      // En caso de que el usuario no haya colocado un descuento
       if (descuento.trim() === '') {
         setDescuento('0');
       }
@@ -44,13 +47,13 @@ function App() {
         stock: parseFloat(stock),
         estado: estado // Se asigna el estado inicial (disponible o no disponible)
       };
-       
+
       setListaProductos([...listaProductos, productoNuevo]);
-       
-      //incrementar el ID
+
+      // Incrementar el ID
       setId(id + 1);
 
-       //vaciar los campos de los inputs
+      // Vaciar los campos de los inputs
       setNombre('');
       setMarca('');
       setPrecioUnitario('');
@@ -78,63 +81,97 @@ function App() {
     );
   }, []);
 
+  // Filtrado de productos a mostrar:
+  // Si no se está buscando, se muestran los disponibles o los no disponibles
+  const productosAMostrar =
+    buscado.trim() === ''
+      ? listaProductos.filter((producto) =>
+          mostrarNoDisponibles ? producto.estado === false : producto.estado === true
+        )
+      : productosFiltrados.filter((producto) =>
+          mostrarNoDisponibles ? producto.estado === false : producto.estado === true
+        );
+
   return (
     <div className="contenedor">
       <form>
-        <input type="text" 
-        disabled 
-        placeholder={id} 
-        value={id} 
-        onChange={(e) => setId(e.target.value)} 
+        <input
+          type="text"
+          disabled
+          placeholder={id}
+          value={id}
+          onChange={(e) => setId(e.target.value)}
         />
 
-        <input type="text" 
-        placeholder="Nombre del producto" 
-        value={nombre} 
-        onChange={(e) => setNombre(e.target.value)}
-         />
-        <input type="text"
-         placeholder="Marca" 
-         value={marca}
-         onChange={(e) => setMarca(e.target.value)} 
-         />
-        <input type="number" 
-        placeholder="Precio Unitario" 
-        value={precioUnitario} 
-        onChange={(e) => setPrecioUnitario(e.target.value)} 
+        <input
+          type="text"
+          placeholder="Nombre del producto"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
         />
-        <input type="number" 
-        placeholder="Descuento (%)" 
-        value={descuento} 
-        onChange={(e) => setDescuento(e.target.value)} 
+        <input
+          type="text"
+          placeholder="Marca"
+          value={marca}
+          onChange={(e) => setMarca(e.target.value)}
         />
-        <input type="number" 
-        placeholder="Stock" 
-        value={stock} onChange={(e) => setStock(e.target.value)} 
+        <input
+          type="number"
+          placeholder="Precio Unitario"
+          value={precioUnitario}
+          onChange={(e) => setPrecioUnitario(e.target.value)}
+        />
+        <input
+          type="number"
+          placeholder="Descuento (%)"
+          value={descuento}
+          onChange={(e) => setDescuento(e.target.value)}
+        />
+        <input
+          type="number"
+          placeholder="Stock"
+          value={stock}
+          onChange={(e) => setStock(e.target.value)}
         />
         <label>
           Estado:
-          <select value={estado ? 'disponible' : 'no disponible'} onChange={(e) => setEstado(e.target.value === 'disponible')}>
+          <select
+            value={estado ? 'disponible' : 'no disponible'}
+            onChange={(e) => setEstado(e.target.value === 'disponible')}
+          >
             <option value="disponible">Disponible</option>
             <option value="no disponible">No disponible</option>
           </select>
         </label>
         <button onClick={agregarProducto}>Agregar un producto</button>
-        <input type="text" placeholder="Buscar un producto" onChange={(e) => {
+        <input
+          type="text"
+          placeholder="Buscar un producto"
+          onChange={(e) => {
             setBuscado(e.target.value);
             buscarElemento(e.target.value);
-          }} />
+          }}
+        />
+
+        {/* Botón para mostrar productos disponibles y no disponibles */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setMostrarNoDisponibles(!mostrarNoDisponibles);
+          }}
+        >
+          {mostrarNoDisponibles
+            ? 'Mostrar productos disponibles'
+            : 'Mostrar productos no disponibles'}
+        </button>
+
         <h2>Productos</h2>
         <div className="producto-lista">
-
-            {/* Cuando se esta buscando, muestra todos los productos (disponibles y no disponibles)  */ }
-
-           {(buscado.trim() === '' ? listaProductos.filter((producto) => producto.estado) : productosFiltrados
-          ).map((producto) => (
+          {productosAMostrar.map((producto) => (
             <div key={producto.id}>
               <Producto producto={producto} />
               <button onClick={() => toggleEstadoProducto(producto.id)}>
-                {producto.estado ? 'Ocultar Producto' : 'Ocultar Producto' }
+                {producto.estado ? 'Eliminar Producto' : 'Mostrar Producto'}
               </button>
             </div>
           ))}
@@ -144,6 +181,4 @@ function App() {
   );
 }
 
-
 export default App;
-
