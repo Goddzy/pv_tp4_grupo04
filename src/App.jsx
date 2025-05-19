@@ -15,6 +15,8 @@ function App() {
   const [descuento, setDescuento] = useState('');
   const [stock, setStock] = useState('');
   const [buscado, setBuscado] = useState('');
+  const [editandoId, setEditandoId] = useState(null);
+  const [nuevoPrecio, setNuevoPrecio] = useState('');
 
 
   //mostrar con el useEffect el array productos cada vez que se modifica (y 1 vez cuando se monta la página)
@@ -61,6 +63,14 @@ function App() {
     setProductosFiltrados(nuevoArray);
 
   }
+
+  const modificarPrecio = (id) => {
+    setListaProductos(listaProductos.map(producto =>
+      producto.id === id ? { ...producto, precio: parseFloat(nuevoPrecio) } : producto
+    ));
+    setEditandoId(null);
+    setNuevoPrecio('');
+  };
 
   return (
     <div className="contenedor">
@@ -111,13 +121,28 @@ function App() {
           }} /> 
         <h2>Productos</h2>
         <div className="producto-lista">
-
-        
-         { (buscado.trim() === '')  ? listaProductos.map((producto) => (<Producto producto={producto} key={producto.id} />))
-         
-          : productosFiltrados.map((producto) => (<Producto producto={producto} key={producto.id} />))
-         }
-       </div>
+          {(buscado.trim() === '' ? listaProductos : productosFiltrados).map((producto) => (
+            <div key={producto.id}>
+              <Producto producto={producto} />
+              {editandoId === producto.id ? (
+                <>
+                  <input
+                    type="number"
+                    value={nuevoPrecio}
+                    onChange={(e) => setNuevoPrecio(e.target.value)}
+                    placeholder="Nuevo precio"
+                  />
+                  <button type="button" onClick={() => modificarPrecio(producto.id)}>Guardar</button>
+                  <button type="button" onClick={() => setEditandoId(null)}>Cancelar</button>
+                </>
+              ) : (
+                <button type="button" onClick={() => { setEditandoId(producto.id); setNuevoPrecio(producto.precio); }}>
+                  Modificar
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
       </form>
     </div>
   );
